@@ -1,12 +1,7 @@
 import { Effect, Layer } from "effect";
 
-import { resolveRef } from "../src/effect/ResolveRef";
-import { ObjectSchema } from "../src/tag";
-import { TableLayer } from "../src/layer/Table";
-import { TableDeps } from "../src/layer/TableDeps";
-import { JoinItemsLive } from "../src/layer/JoinItems";
-import { JoinItemsStateLayer } from "../src/layer/JoinItemsState";
-import { JoinLayer } from "../src/layer/Join";
+import { ObjectSchema, Select } from "../src/tag";
+import { SelectLayerLive } from "../src/layer/Select";
 
 const schema = ObjectSchema.of({
   $id: "foo",
@@ -23,27 +18,34 @@ const ObjectSchemaLive = Layer.succeed(
   schema,
 );
 
-const TableLive = ObjectSchemaLive.pipe(Layer.provide(TableDeps)).pipe(
-  Layer.provide(TableLayer),
+const DepsLive = ObjectSchemaLive.pipe(Layer.provide(SelectLayerLive));
+
+const program = Select.pipe(
+  Effect.map(({ select, getSelectItems, from }) => ({
+    select,
+    getSelectItems,
+    getJoinItems: from.getJoinItems,
+  })),
 );
 
-const JoinLive = JoinItemsLive.pipe(Layer.provide(JoinItemsStateLayer)).pipe(
-  Layer.provide(JoinLayer),
-);
-
-const DepsLive = TableLive.pipe(Layer.provide(Layer.passthrough(JoinLive)));
-
-// From, Join, Resolve, SelectItemsState
-
-describe("resolveRef", () => {
-  it("should resolve a ref", () => {
-    const runnable = Effect.provideLayer(resolveRef, DepsLive).pipe(
-      Effect.flatMap((resolve) => resolve("bar")),
+describe("Select", () => {
+  it("should select a column", () => {
+    const runnable = Effect.provideLayer(program, DepsLive).pipe(
+      Effect.flatMap(({ select, getSelectItems }) =>
+        select("name").pipe(Effect.flatMap(() => getSelectItems()))
+      ),
     );
 
-    const [ref, col] = Effect.runSync(runnable);
+    const selectItems = Effect.runSync(runnable);
 
-    expect(ref).toStrictEqual({ alias: "__bar" });
-    expect(col).toStrictEqual({ key: "bar", jsonSchema: { $ref: "foo.bar" } });
+    expect(selectItems).toStrictEqual([
+      [
+        { schema: "public", name: "foo" },
+        {
+          key: "name",
+          jsonSchema: { type: "string" },
+        },
+      ],
+    ]);
   });
 });

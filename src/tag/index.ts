@@ -8,6 +8,7 @@ export { Relations } from "./Relations";
 export { Resolve } from "./Resolve";
 export { ResolveColumn } from "./ResolveColumn";
 export { ResolveRef } from "./ResolveRef";
+export { Select } from "./Select";
 export { SelectItems, SelectItemsState } from "./SelectItems";
 export { SelectableOptions } from "./SelectableOptions";
 export { Table } from "./Table";

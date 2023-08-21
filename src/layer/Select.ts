@@ -9,8 +9,11 @@ import { FromLayer } from "./From";
 
 const SelectLayer = Layer.effect(Select, selectService);
 
-const SelectLayerLive = Layer.merge(SelectItemsLive, FromLayer).pipe(
-  Layer.provide(SelectItemsStateLayer),
+const SelectLayerLive = Layer.merge(
+  SelectItemsLive.pipe(
+    Layer.provide(SelectItemsStateLayer),
+  ),
+  FromLayer,
 )
   .pipe(
     Layer.provide(SelectLayer),
