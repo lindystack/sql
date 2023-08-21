@@ -48,4 +48,24 @@ describe("Select", () => {
       ],
     ]);
   });
+  it("should select a relation", () => {
+    const runnable = Effect.provideLayer(program, DepsLive).pipe(
+      Effect.flatMap(({ select, getSelectItems }) =>
+        select("bar").pipe(Effect.flatMap(() => getSelectItems()))
+      ),
+    );
+
+    const selectItems = Effect.runSync(runnable);
+
+    expect(selectItems).toStrictEqual([
+      [
+        { alias: "__bar" },
+        {
+          key: "bar",
+          jsonSchema: { $ref: "foo.bar" },
+          kind: "many-to-one",
+        },
+      ],
+    ]);
+  });
 });
