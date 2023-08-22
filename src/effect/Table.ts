@@ -1,6 +1,7 @@
 import { Effect } from "effect";
 
 import {
+  Defs,
   ObjectSchema,
   PartitionedProperties,
   SelectableOptions,
@@ -11,14 +12,25 @@ const makeTable = Effect.all([
   ObjectSchema,
   TableRef,
   PartitionedProperties,
+  Defs,
   Effect.serviceOption(SelectableOptions),
 ])
   .pipe(
-    Effect.map(([objectSchema, tableRef, [columns, relations], options]) => ({
+    Effect.map((
+      [
+        objectSchema,
+        tableRef,
+        [columns, relations],
+        { $defs, lookup$Def },
+        options,
+      ],
+    ) => ({
       schema: objectSchema,
       ref: tableRef,
       columns,
       relations,
+      $defs,
+      lookup$Def,
       options,
     })),
   );

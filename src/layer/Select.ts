@@ -9,14 +9,15 @@ import { FromLayer } from "./From";
 
 const SelectLayer = Layer.effect(Select, selectService);
 
-const SelectLayerLive = Layer.merge(
+const SelectLayerDeps = Layer.merge(
   SelectItemsLive.pipe(
     Layer.provide(SelectItemsStateLayer),
   ),
   FromLayer,
-)
-  .pipe(
-    Layer.provide(SelectLayer),
-  );
+);
 
-export { SelectLayer, SelectLayerLive };
+const SelectLayerLive = SelectLayerDeps.pipe(
+  Layer.provide(SelectLayer),
+);
+
+export { SelectLayer, SelectLayerDeps, SelectLayerLive };

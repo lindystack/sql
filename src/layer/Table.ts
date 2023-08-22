@@ -6,11 +6,13 @@ import { makeTable } from "../effect/Table";
 import { PartitionedPropertiesLayer } from "./PartitionedProperties";
 import { TableRefLayer } from "./TableRef";
 import { ObjectSchemaLayer } from "./ObjectSchema";
+import { DefsLayer } from "./Defs";
 
 const TableDeps = Layer.mergeAll(
   PartitionedPropertiesLayer,
   TableRefLayer,
   ObjectSchemaLayer,
+  DefsLayer,
 );
 
 export { TableDeps };

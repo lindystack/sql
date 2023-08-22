@@ -11,6 +11,15 @@ const schema = ObjectSchema.of({
     name: { type: "string" },
     bar: { $ref: "foo.bar" },
   },
+  $defs: {
+    bar: {
+      $id: "foo.bar",
+      type: "object",
+      properties: {
+        id: { type: "integer" },
+      },
+    },
+  },
 });
 
 const ObjectSchemaLive = Layer.succeed(
@@ -50,12 +59,23 @@ describe("Select", () => {
   });
   it("should select a relation", () => {
     const runnable = Effect.provideLayer(program, DepsLive).pipe(
-      Effect.flatMap(({ select, getSelectItems }) =>
-        select("bar").pipe(Effect.flatMap(() => getSelectItems()))
+      Effect.flatMap(({ select, getSelectItems, getJoinItems }) =>
+        select("bar").pipe(
+          Effect.flatMap(() =>
+            Effect.Do.pipe(
+              Effect.bind("selectItems", () => getSelectItems()),
+              Effect.bind("joinItems", () => getJoinItems()),
+              Effect.map(({ selectItems, joinItems }) => ({
+                selectItems,
+                joinItems,
+              })),
+            )
+          ),
+        )
       ),
     );
 
-    const selectItems = Effect.runSync(runnable);
+    const { selectItems, joinItems } = Effect.runSync(runnable);
 
     expect(selectItems).toStrictEqual([
       [
@@ -67,5 +87,13 @@ describe("Select", () => {
         },
       ],
     ]);
+
+    expect(joinItems["bar"].from.table.schema).toStrictEqual({
+      $id: "foo.bar",
+      type: "object",
+      properties: {
+        id: { type: "integer" },
+      },
+    });
   });
 });

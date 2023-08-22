@@ -1,3 +1,4 @@
+export { $Defs } from "./Defs";
 export { ColumnRef } from "./ColumnRef";
 export { Columns } from "./Columns";
 export { PartitionedProperties } from "./PartitionedProperties";

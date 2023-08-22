@@ -5,7 +5,6 @@ import { JoinItemsState } from "./JoinItems";
 
 interface Join {
   items: JoinItemsState;
-  // addJoin: (ref: string) => void;
   lookup: (
     ref: string,
   ) => Effect.Effect<never, NoSuchElementException, Joinable>;

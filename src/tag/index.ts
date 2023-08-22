@@ -1,4 +1,5 @@
 export { Columns } from "./Columns";
+export { Defs } from "./Defs";
 export { From } from "./From";
 export { Join } from "./Join";
 export { JoinItems, JoinItemsState } from "./JoinItems";
