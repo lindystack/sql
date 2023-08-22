@@ -15,7 +15,7 @@ const resolveRef = Effect.all([Join, Table]).pipe(
       ReadonlyArray.findFirst((r) => r.key === ref),
       Effect.flatMap((r) => makeRelationRef([{ alias: `__${r.key}` }, r])),
       // TODO: make a way to look up the ref and add a join if it doesn't exist
-      Effect.tap((x) => Effect.sync(() => console.log(x))),
+      // Effect.tap((x) => Effect.sync(() => console.log(x))),
     )
   ),
 );
